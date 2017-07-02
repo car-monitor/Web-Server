@@ -1,0 +1,16 @@
+C-create
+R-retrieve
+U-update
+D-delete
+
+user-CRU
+department-CR
+unit-CR
+info-CR
+order-CRUD
+car-CRUD
+carLocation-CR
+carState-CR
+warning-CR
+warningDict-CR
+
