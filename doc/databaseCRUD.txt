@@ -6,11 +6,11 @@ D-delete
 user-CRU
 department-CR
 unit-CR
-info-CR
-order-CRUD
+message-CR
 car-CRUD
+
+order-CRUD
 carLocation-CR
 carState-CR
 warning-CR
 warningDict-CR
-
