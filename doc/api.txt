@@ -1,0 +1,527 @@
+需要访问数据库的handler请继承handler.BaseHandler
+权限判断通过cookie中id和传过来的是否一致，若不一致比较两者的权限
+
+handler.user.RegisterHandler
+-功能：注册用户（所有项都不能为空）
+-方式：post
+-数据：{"username":xxx, "password":xxx}
+-响应：{"status":(0-用户名重复，1-注册成功)}
+
+handler.user.LoginHandler
+-功能：登陆系统，在cookie内设置用户id
+-方式：post
+-数据：{"username":xxx, "password":xxx}
+-响应：{"status":(0-用户名密码错误，1-登录成功)，
+		    "user": {
+		  	"id": xxx,
+		  	"username": xxx,
+	  		"authority":(0-普通用户，1-司机，2-管理员， 3-超级管理员),
+	  		"sex" : (0-女， 1-男),
+	  		"driverType": xxx，
+	  		"identify": xxx,
+	  		"phone": xxx,
+	  		"photoURL": xxx,
+	  		"address": xxx,
+	  		"companyID": xxx,
+	  		"appartmentID": xxx,
+	  		"jobNo": xxx}
+	     }
+
+handler.user.LogoutHandler
+-功能：登出，清除cookie中的id
+-方式：get
+-响应：{"status":(0-登出失败，1-登出成功)}
+
+handler.user.ModifyinfoHandler
+-功能：修改用户信息，判断是否有修改权限，管理员可以修改司机，超级管理员可以修改司机和管理员，接受数据为需要修改的项以及id（id用来判断是否是改自己的信息，若不是修改自己的信息需要做权限判断），可能有多项但要修改的值不能为空
+-方式：post
+-数据：{"id": xxx,
+		   "xxx"（不能为authority）: xxx ,
+		    ......}
+-响应：{"status":(0-修改失败，1-修改成功)，
+	  	  "user": {
+		  	"id": xxx,
+		  	"username": xxx,
+	  		"authority":(0-普通用户，1-司机，2-管理员， 3-超级管理员),
+	  		"sex": (0-女， 1-男),
+	  		"driverType": xxx，
+	  		"identify": xxx,
+	  		"phone": xxx,
+	  		"photoURL": xxx,
+	  		"address": xxx,
+	  		"companyID": xxx,
+	  		"appartmentID": xxx,
+	  		"jobNo": xxx}
+	     }
+
+handler.user.ModifyauthorityHandler
+-功能：修改用户权限，管理员可以将普通用户设置为司机，或者司机设置为普通用户，超级管理员可以修改超级管理员以下的所有权限，要修改的值不能为空
+-方式：post
+-数据：{"id": xxx,
+		   "authority": (0-普通用户，1-司机，2-管理员， 3-超级管理员)}
+-响应：{"status":(0-修改失败，1-修改成功)}
+
+handler.user.GetusersHandler
+-功能：根据url中的authority以及keyword来筛选用户，authority和keyword均可为空，当两个都为空时返回所有的用户
+-方式：get
+-响应：{"status": (0-获取失败, 1-获取成功),
+          "users": [
+		 	      {"id": xxx,
+		 	       "username": xxx,
+	           "authority":(0-普通用户，1-司机，2-管理员， 3-超级管理员),
+	           "sex": (0-女， 1-男),
+	           "driverType": xxx，
+	           "identify": xxx,
+	           "phone": xxx,
+	           "photoURL": xxx,
+	           "address": xxx,
+	           "companyID": xxx,
+	           "appartmentID": xxx,
+	           "jobNo": xxx},
+		       {}, ......]
+		  }
+
+handler.user.GetuserHandler
+-功能：根据url中的id来返回特定某个用户的个人信息以及与之相关的运单
+-方式：get
+-响应：{"status": (0-获取失败, 1-获取成功),
+	  	  "user":
+			{"id": xxx,
+			 "username": xxx,
+	         "authority":(0-普通用户，1-司机，2-管理员， 3-超级管理员),
+	         "sex": (0-女， 1-男),
+	         "driverType": xxx，
+	         "identify": xxx,
+	         "phone": xxx,
+	         "photoURL": xxx,
+	         "address": xxx,
+	         "companyID": xxx,
+	         "appartmentID": xxx,
+	         "jobNo": xxx},
+	      "orders": [
+	      	{"id": xxx,
+	      	 "carID": xxx
+	      	 "driverId": xxx
+	      	 "startSite": xxx
+	      	 "coordinateType": xxx
+	      	 "locationType": xxx
+	      	 "startLongitude": xxx
+	      	 "startLatitude": xxx
+	      	 "endLongitude": xxx
+	      	 "endLatitude": xxx
+	      	 "isFinished": (0-完成, 1-未完成)
+	      	 "startTime": (xxxx-xx-xx xx:xx:xx)
+	      	 "endTime": (xxxx-xx-xx xx:xx:xx)
+	      	 "addressorName": xxx
+	      	 "addressorPhone": xxx
+	      	 "addressorAddress": xxx
+	      	 "addresseeName": xxx
+	      	 "addresseePhone": xxx
+	      	 "addresseeAddress": xxx
+	      	 "sealExpect": xxx
+	      	 "sealCurrent": xx},
+	      	{}, ......]
+	    }
+
+handler.car.RegisterHandler
+-功能：注册车辆信息（所有项都不能为空）
+-方式：post
+-数据：{"carPlate": xxx,
+		   "carType": xxx,
+		   "buyTime": xxx,
+		   "cargoCapacity": xxx,
+		   "engineNo": xxx,
+		   "owner": (车主身份证),
+		   "passengerNum": xxx}
+-响应：{"status": (0-注册失败, 1-注册成功),
+		  "car":
+		    {"id": xxx,
+		     "carPlate": xxx,
+		     "carType": xxx,
+		     "buyTime": xxx,
+		     "cargoCapacity": xxx,
+		     "engineNo": xxx,
+		     "owner": (车主身份证),
+		     "passengerNum": xxx,
+		     "photoURL": xxx}
+		 }
+
+handler.car.RemoveHandler
+-功能：删除特定车辆（id不能为空）
+-方式：post
+-数据：{"id": xxx}
+-响应：{"status": (0-删除失败, 1-删除成功)}
+
+handler.car.ModifyHandler
+-功能：修改车辆信息，需要判断权限，只有管理员以上权限才可以进行操作，数据包含需要修改的项以及车辆的id（不可以修改），需要修改的项不能为空
+-方式：post
+-数据：{"id": xxx,
+		   "xxx": xxx,
+		   ......}
+-响应：{"status": (0-修改失败, 1-修改成功),
+          "car":
+		    {"id": xxx,
+		     "carPlate": xxx,
+		     "carType": xxx,
+		     "buyTime": xxx,
+		     "cargoCapacity": xxx,
+		     "engineNo": xxx,
+		     "owner": (车主身份证),
+		     "passengerNum": xxx,
+		     "photoURL": xxx}
+		 }
+
+handler.car.GetcarHandler
+-功能：获取url中id所对应的车辆的信息以及和车辆相关的运单信息
+-方式：get
+-响应：{"status": (0-获取失败, 1-获取成功),
+		  "car":
+		    {"id": xxx,
+		     "carPlate": xxx,
+		     "carType": xxx,
+		     "buyTime": xxx,
+		     "cargoCapacity": xxx,
+		     "engineNo": xxx,
+		     "owner": (车主身份证),
+		     "passengerNum": xxx,
+		     "photoURL": xxx},
+		  "orders": [
+	      	{"id": xxx,
+	      	 "carID": xxx
+	      	 "driverId": xxx
+	      	 "startSite": xxx
+	      	 "coordinateType": xxx
+	      	 "locationType": xxx
+	      	 "startLongitude": xxx
+	      	 "startLatitude": xxx
+	      	 "endLongitude": xxx
+	      	 "endLatitude": xxx
+	      	 "isFinished": (0-完成, 1-未完成)
+	      	 "startTime": (xxxx-xx-xx xx:xx:xx)
+	      	 "endTime": (xxxx-xx-xx xx:xx:xx)
+	      	 "addressorName": xxx
+	      	 "addressorPhone": xxx
+	      	 "addressorAddress": xxx
+	      	 "addresseeName": xxx
+	      	 "addresseePhone": xxx
+	      	 "addresseeAddress": xxx
+	      	 "sealExpect": xxx
+	      	 "sealCurrent": xx},
+	      	{}, ......]
+	     }
+
+handler.car.GetcarsHandler
+-功能：获取通过url中keyword筛选后的车辆信息
+-方式：get
+-响应：{"status": (0-获取失败, 1-获取成功),
+		  "cars": [
+		    {"id": xxx,
+		     "carPlate": xxx,
+		     "carType": xxx,
+		     "buyTime": xxx,
+		     "cargoCapacity": xxx,
+		     "engineNo": xxx,
+		     "owner": (车主身份证),
+		     "passengerNum": xxx,
+		     "photoURL": xxx},
+		     {}, ......]
+		 }
+
+handler.car.SendcarinfoHandler
+-功能：接受车辆上传的位置信息（所有项都不能为空）、状态信息和报警信息，若status项为0则接收到的数据不包含状态信息，不对statusdetail进行处理，warning项同理，生成报警时还需要生成报警字典
+-方式：post
+-数据：{"location":
+		   {"carID": xxx,
+		    "waybillID": xxx,
+		    "time": xxx,
+		    "coordinateType": xxx,
+		    "locationType": xxx,
+		    "longitude": xxx,
+		    "latitude": xxx,
+		    "driverId": xxx},
+		"status": (0-不是发送状态, 1-发送状态),
+		"statusdetail": {},
+		"warning": (0-不是发送报警, 1-发送报警),
+		"warningdetail": {}
+	   }
+-响应：{"status":(0-发送失败, 1-发送成功)}
+
+handler.company.GetallunitsHandler
+-功能：获取全部的单位信息
+-方式：get
+-响应：{"status": (0-获取失败, 1-获取成功)
+		   "units": [
+		    {"id": xxx,
+		    "name": xxx},
+		    {}, ....]
+		 }
+
+handler.company.GetunitHandler
+-功能：通过url中的id获取id对应的unit的信息
+-方式：get
+-响应：{"status": (0-获取失败, 1-获取成功)
+		  "unit": {
+		    "id": xxx,
+		    "name": xxx}
+		  }
+
+handler.company.RegisterunitHandler
+-功能：注册单位信息（不能重复，不能为空）
+-方式：post
+-数据：{"name": xxx}
+-响应：{"status": (0-注册失败, 1-注册成功)
+		  "unit": {
+		    "id": xxx,
+		    "name": xxx}
+		  }
+
+handler.company.GetalldepartmentHandler
+-功能：获取所有的部门的信息
+-方式：get
+-响应：{"status": (0-获取失败, 1-获取成功)
+		  "units": [
+		    {"id": xxx,
+		    "unitId": xxx,
+		    "name": xxx},
+		    {}, ....]
+		 }
+
+handler.company.GetdepartmentHandler
+-功能：获取url中id所对应的部门的信息
+-方式：get
+-响应：{"status": (0-获取失败, 1-获取成功)
+		  "department": {
+		    "id": xxx,
+		    "unitId": xxx,
+		    "name": xxx}
+		  }
+
+handler.company.RegisterdeparmentHandler
+-功能：注册部门信息，数据包括部门对应的单位的id以及部门的名字（不能重复，即一个单位下不能有同名部门），所有项均不能为空
+-方式：post
+-数据：{"unitId": xxx,
+        "name": xxx}
+-响应：{"status": (0-注册失败, 1-注册成功)
+		  "department": {
+		    "id": xxx,
+		    "unitId": xxx,
+		    "name": xxx}
+		  }
+
+handler.info.GetallwarningsHandler
+-功能：获取全部的报警字典
+-方式：get
+-响应：{"status": (0-获取失败, 1-获取成功)
+		  "warnings": [
+		    {"id": xxx,
+		    "name": xxx,
+		    "detail": xxx},
+		    {}, ....]
+		 }
+
+handler.info.GetwarningHandler
+-功能：获取url中id对应的报警字典的信息
+-方式：get
+-响应：{"status": (0-获取失败, 1-获取成功)
+		   "warning": {
+		    "id": xxx,
+		    "name": xxx,
+		    "detail": xxx}
+		  }
+
+handler.info.GetmessageHandler
+-功能：获取个人相关的全部消息（作为发送人和接收人），id通过cookie获取
+-方式：get
+-响应：{"status": (0-获取失败, 1-获取成功),
+		   "infos": [
+		  	{"type": (0-广播，1-其他),
+		  	 "sender": {
+		  	 	"id": xxx,
+		  	 	"username": xxx,
+	         	"authority":(0-普通用户，1-司机，2-管理员， 3-超级管理员),
+	         	"sex": (0-女， 1-男),
+	         	"driverType": xxx，
+	         	"identify": xxx,
+	         	"phone": xxx,
+	         	"photoURL": xxx,
+	         	"address": xxx,
+	         	"companyID": xxx,
+	         	"appartmentID": xxx,
+	         	"jobNo": xxx},
+		  	 "title": xxx,
+		  	 "content": xxx}, {}.......]
+		 }
+
+handler.info.SendmessageHandler
+-功能：接收用户想要发送的消息，存入数据库并等待接收者发送获取消息的请求，存入数据库时需要自行加上senderid一项，所有项均不能为空
+-方式：post
+-数据：{"type": (0-广播，1-其他),
+		  "title": xxx,
+	    "content": xxx,
+	    "receiverid": xxx}
+-响应：{"status":(0-发送失败，1-发送成功)}
+
+handler.order.GetordersHandler
+-功能：获取通过url中carid、driverid以及keyword筛选后的运单信息，三项均可为空，全为空时返回所有运单的信息，运单信息包括运单基本信息以及执行的车辆的运行轨迹
+-方式：get
+-响应：{"status": (0-获取失败, 1-获取成功),
+		  "orderdetails": [
+	      	{order: {"id": xxx,
+	      			 "carID": xxx
+	      			 "driverId": xxx
+	      			 "startSite": xxx
+	      			 "coordinateType": xxx
+	      			 "locationType": xxx
+	      			 "startLongitude": xxx
+	      			 "startLatitude": xxx
+	      			 "endLongitude": xxx
+	      			 "endLatitude": xxx
+	      			 "isFinished": (0-完成, 1-未完成)
+	      			 "startTime": (xxxx-xx-xx xx:xx:xx)
+	      			 "endTime": (xxxx-xx-xx xx:xx:xx)
+	      			 "addressorName": xxx
+	      			 "addressorPhone": xxx
+	      			 "addressorAddress": xxx
+	      			 "addresseeName": xxx
+	      			 "addresseePhone": xxx
+	      			 "addresseeAddress": xxx
+	      			 "sealExpect": xxx
+	      			 "sealCurrent": xx}
+	      	 "route": [
+	      	 		{"id": xxx,
+		  			 "carID": xxx,
+		    		 "waybillID": xxx,
+		    		 "time": xxx,
+		    		 "coordinateType": xxx,
+		    	     "locationType": xxx,
+		    		 "longitude": xxx,
+		    		 "latitude": xxx,
+		    		 "driverId": xxx,
+		    		 "photoURL": xxx},
+		    		{}, ......]},
+		    {}, ......]
+		 }
+
+handler.order.GetorderHandler
+-功能：获取url中id对应的运单的信息，信息包括运单基本信息、执行运单的车辆的运行轨迹、相关的车辆状态信息、相关的报警信息
+-方式：get
+-响应：{"status": (0-获取失败, 1-获取成功),
+		  "order":
+		  	{"id": xxx,
+	      	 "carID": xxx
+	      	 "driverId": xxx
+	      	 "startSite": xxx
+	      	 "coordinateType": xxx
+	      	 "locationType": xxx
+	      	 "startLongitude": xxx
+	      	 "startLatitude": xxx
+	      	 "endLongitude": xxx
+	      	 "endLatitude": xxx
+	      	 "isFinished": (0-完成, 1-未完成)
+	      	 "startTime": (xxxx-xx-xx xx:xx:xx)
+	      	 "endTime": (xxxx-xx-xx xx:xx:xx)
+	      	 "addressorName": xxx
+	      	 "addressorPhone": xxx
+	      	 "addressorAddress": xxx
+	      	 "addresseeName": xxx
+	      	 "addresseePhone": xxx
+	      	 "addresseeAddress": xxx
+	      	 "sealExpect": xxx
+	      	 "sealCurrent": xxx},
+		  "route": [
+		  	{"id": xxx,
+		  	 "carID": xxx,
+		     "waybillID": xxx,
+		     "time": xxx,
+		     "coordinateType": xxx,
+		     "locationType": xxx,
+		     "longitude": xxx,
+		     "latitude": xxx,
+		     "driverId": xxx,
+		     "photoURL": xxx},
+		    {}, ......],
+		  "carstatus": [
+		    {"id": xxx,
+		     "carID": xxx,
+		     "driverID": xxx,
+		     "speed": xxx,
+		     "mileage": xxx,
+		     "oil": xxx,
+		     "locationID": xxx,
+		     "temperature": xxx,
+		     "humidity": xxx,
+		     "pressure": xxx,
+		     "concentration": xxx,
+		     "alertID": xxx,
+		     "photoURL": xxx,
+		     "waybillID": xxx},
+		     {}, ......],
+		  "warning": [
+		  	{"id": xxx,
+		  	 "startID": xxx,
+		  	 "endID": xxx,
+		  	 "type": xxx
+		  	 "status": (0-未解决，1-已解决),
+		  	 "waybillID": xxx},
+		  	 {}, ......]
+		  	}
+
+handler.order.RegisterHandler
+-功能：注册运单基本信息（所有项均不能为空）
+-方式：post
+-数据：{"carID": xxx
+		"driverId": xxx
+		"startSite": xxx
+		"coordinateType": xxx
+		"locationType": xxx
+		"startLongitude": xxx
+		"startLatitude": xxx
+		"endLongitude": xxx
+		"endLatitude": xxx
+	    "isFinished": (0-完成, 1-未完成)
+	    "startTime": (xxxx-xx-xx xx:xx:xx)
+	    "endTime": (xxxx-xx-xx xx:xx:xx)
+	    "addressorName": xxx
+	    "addressorPhone": xxx
+	    "addressorAddress": xxx
+	    "addresseeName": xxx
+	    "addresseePhone": xxx
+	    "addresseeAddress": xxx
+	    "sealExpect": xxx
+	    "sealCurrent": xxx}
+
+handler.order.RemoveHandler
+-功能：删除id对应的运单（需要做权限判断，只有管理员以上权限才可以进行该操作）
+-方式：post
+-数据：{"id": xxx}
+-响应：{"status": (0-删除失败, 1-删除成功)}
+
+handler.order.ModifyHandler
+-功能：修改运单信息，需要判断权限，只有管理员以上权限才可以进行操作，数据包含需要修改的项以及运单的id（不可以修改），需要修改的项不能为空
+-方式：post
+-数据：{"id": xxx,
+		   "xxx": xxx,
+		   ......}
+-响应：{"status": (0-修改失败, 1-修改成功),
+          "order":
+		  	{"id": xxx,
+	      	 "carID": xxx
+	      	 "driverId": xxx
+	      	 "startSite": xxx
+	      	 "coordinateType": xxx
+	      	 "locationType": xxx
+	      	 "startLongitude": xxx
+	      	 "startLatitude": xxx
+	      	 "endLongitude": xxx
+	      	 "endLatitude": xxx
+	      	 "isFinished": (0-完成, 1-未完成)
+	      	 "startTime": (xxxx-xx-xx xx:xx:xx)
+	      	 "endTime": (xxxx-xx-xx xx:xx:xx)
+	      	 "addressorName": xxx
+	      	 "addressorPhone": xxx
+	      	 "addressorAddress": xxx
+	      	 "addresseeName": xxx
+	      	 "addresseePhone": xxx
+	      	 "addresseeAddress": xxx
+	      	 "sealExpect": xxx
+	      	 "sealCurrent": xxx}}

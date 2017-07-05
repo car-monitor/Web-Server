@@ -9,4 +9,9 @@ class RegisterHandler(BaseHadnler):
 		param = self.request.body.decode('utf-8')
 		jparam = json.load(param)
 		usermodel = userModel(self.db)
-		jparam['username']
+
+		if usermodel.retrieve(jparam) != None:
+			usermodel.create(jparam)
+			self.write({"status" : 1})
+		else:
+			self.write({"status" : 0})
