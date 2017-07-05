@@ -16,7 +16,7 @@ class Unit:
 
 	def retrieve(self, data):
 		if data.has_key('id'):
-			unit = self.unit_collection.find({'_id': ObjectId(data['id'])})
+			unit = self.unit_collection.find_one({'_id': ObjectId(data['id'])})
 			unit['id'] = str(unit['_id'])
 			del unit['_id']
 			return unit
@@ -26,3 +26,11 @@ class Unit:
 				unit['id'] = str(unit['_id'])
 				del unit['_id']
 			return units
+
+
+if __name__ == '__main__':
+	client = MongoClient(config.address, config.port)
+	collection = Unit(client)
+	result = collection.create({'name': '530'})
+	print collection.retrieve({})
+	print collection.retrieve({'id': result['id']})

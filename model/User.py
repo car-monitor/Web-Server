@@ -10,8 +10,7 @@ class User:
 		self.user_collection = self.db.user_collection
 
 	def create(self, data):
-		result = self.user_collection.find_one({'username': data['username']})
-		self.user_collection.insert({'username': data['username'], 'password': data['password']})
+		return self.user_collection.insert({'username': data['username'], 'password': data['password']})
 
 	def retrieve(self, data):
 		#ignore the function of keyword
@@ -22,23 +21,27 @@ class User:
 				del user['_id']
 			return users
 		else: 
-			user = self.user_collection.find_one({'username': data['username']})
-			user['id'] = str(user['_id'])
-			del user['_id']
+			user = self.user_collection.find_one({'_id': ObjectId(data['id'])})
+			if user != None:
+				user['id'] = str(user['_id'])
+				del user['_id']
 			return user
 
 	def update(self, data):
 		user = self.user_collection.find_one({'_id': ObjectId(data['id'])})
 		if user != None:
-			for key in user: 
-				if key != '_id': user[key] = data[key]
-			user_collection.save(user)
+			for key in data: 
+				if key != 'id': user[key] = data[key]
+			self.user_collection.save(user)
 			if not data.has_key('authority'):
 				user['id'] = str(user['_id'])
 				del user['_id']
+				return user
 
 
 if __name__ == '__main__':
-	user = User()
-	u = user.create({'username': 'xzz', 'password': '123'})
-	print user.retrieve({'_id': u['_id']})
+	client = MongoClient(config.address, config.port)
+	collection = User(client)
+	uid = collection.create({'username': 'xzz', 'password': '123'})
+	print collection.retrieve({'id': uid})
+	print collection.update({'id': uid, 'username': 'zzx'})

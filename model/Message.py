@@ -13,6 +13,17 @@ class Message:
 		self.message_collection.insert(data)
 
 	def retrieve(self, data):
-		messages = self.message_collection.find({'senderid': ObjectId(data['id'])})
-		messages.extend(self.message_collection.find({'receiverid': ObjectId(data['id'])}))
+		messages1 = list(self.message_collection.find({'senderid': data['id']}))
+		messages2 = list(self.message_collection.find({'receiverid': data['id']}))
+		messages = messages1 + messages2
+		for m in messages: del m['_id']
+		return messages
+
+
+if __name__ == '__main__':
+	client = MongoClient(config.address, config.port)
+	collection = Message(client)
+	collection.create({'senderid': '595cf2ff99616e517ca52142'})
+	print collection.retrieve({'id': '595cf2ff99616e517ca52142'})
+
 		

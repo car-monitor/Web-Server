@@ -16,7 +16,7 @@ class Department:
 
 	def retrieve(self, data):
 		if data.has_key('id'):
-			department = self.department_collection.find({'_id': ObjectId(data['id'])})
+			department = self.department_collection.find_one({'_id': ObjectId(data['id'])})
 			department['id'] = str(department['_id'])
 			del department['_id']
 			return department
@@ -26,3 +26,11 @@ class Department:
 				department['id'] = str(department['_id'])
 				del department['_id']
 			return departments
+
+
+if __name__ == '__main__':
+	client = MongoClient(config.address, config.port)
+	collection = Department(client)
+	result = collection.create({'name': 'zhishanyuan'})
+	print collection.retrieve({})
+	print collection.retrieve({'id': result['id']})
