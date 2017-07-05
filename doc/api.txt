@@ -1,5 +1,6 @@
 需要访问数据库的handler请继承handler.BaseHandler
 权限判断通过cookie中id和传过来的是否一致，若不一致比较两者的权限
+主要模块包括：user、car、company、info、order
 
 handler.user.RegisterHandler
 -功能：注册用户（所有项都不能为空）
