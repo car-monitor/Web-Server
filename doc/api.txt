@@ -83,7 +83,7 @@ handler.user.GetusersHandler
 		  }
 
 handler.user.GetuserHandler
--功能：根据url中的id来返回特定某个用户的个人信息以及与之相关的运单
+-功能：根据路径中的id（可用input获取，详见项目的api文档）来返回特定某个用户的个人信息以及与之相关的运单
 -方式：get
 -响应：{"status": (0-获取失败, 1-获取成功),
 	  	  "user":
@@ -173,7 +173,7 @@ handler.car.ModifyHandler
 		 }
 
 handler.car.GetcarHandler
--功能：获取url中id所对应的车辆的信息以及和车辆相关的运单信息
+-功能：获取路径中的id（可用input获取，详见项目的api文档）所对应的车辆的信息以及和车辆相关的运单信息
 -方式：get
 -响应：{"status": (0-获取失败, 1-获取成功),
 		  "car":
@@ -258,7 +258,7 @@ handler.company.GetallunitsHandler
 		 }
 
 handler.company.GetunitHandler
--功能：通过url中的id获取id对应的unit的信息
+-功能：根据路径中的id（可用input获取，详见项目的api文档）获取id对应的unit的信息
 -方式：get
 -响应：{"status": (0-获取失败, 1-获取成功)
 		  "unit": {
@@ -288,7 +288,7 @@ handler.company.GetalldepartmentHandler
 		 }
 
 handler.company.GetdepartmentHandler
--功能：获取url中id所对应的部门的信息
+-功能：获取路径中的id（可用input获取，详见项目的api文档）所对应的部门的信息
 -方式：get
 -响应：{"status": (0-获取失败, 1-获取成功)
 		  "department": {
@@ -321,7 +321,7 @@ handler.info.GetallwarningsHandler
 		 }
 
 handler.info.GetwarningHandler
--功能：获取url中id对应的报警字典的信息
+-功能：获取路径中的id（可用input获取，详见项目的api文档）对应的报警字典的信息
 -方式：get
 -响应：{"status": (0-获取失败, 1-获取成功)
 		   "warning": {
@@ -404,7 +404,7 @@ handler.order.GetordersHandler
 		 }
 
 handler.order.GetorderHandler
--功能：获取url中id对应的运单的信息，信息包括运单基本信息、执行运单的车辆的运行轨迹、相关的车辆状态信息、相关的报警信息
+-功能：获取路径中的id（可用input获取，详见项目的api文档）对应的运单的信息，信息包括运单基本信息、执行运单的车辆的运行轨迹、相关的车辆状态信息、相关的报警信息
 -方式：get
 -响应：{"status": (0-获取失败, 1-获取成功),
 		  "order":

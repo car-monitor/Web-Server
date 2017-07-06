@@ -2,7 +2,7 @@ from base import *
 import json
 import model.User as userModel
 
-class RegisterHandler(BaseHadnler):
+class RegisterHandler(BaseHandler):
 
 	def post(self):
 		#将body读取出来并转换为dict对象
@@ -15,3 +15,8 @@ class RegisterHandler(BaseHadnler):
 			self.write({"status" : 1})
 		else:
 			self.write({"status" : 0})
+
+class LoginHandler(BaseHandler):
+
+	def post(self):
+		
