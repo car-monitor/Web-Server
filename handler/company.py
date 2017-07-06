@@ -1,14 +1,13 @@
 from base import *
 import json
-import model.Department as Department
-import model.Unit as Unit
+from model.Department import Department
+from model.Unit import Unit
 
 
 class GetallunitsHandler(BaseHandler):
 	def get(self):
 		if not self.current_user:
 			self.set_status(401)
-			return
 		else:
 			unit = Unit(self.db)
 			unitsInfo = unit.retrieve()
@@ -19,7 +18,6 @@ class GetunitHandler(BaseHandler):
 	def get(self):
 		if not self.current_user:
 			self.set_status(401)
-			return
 		else:
 			unit = Unit(self.db)
 			unitid = self.get_argument('id', '')
@@ -34,10 +32,8 @@ class RegisterunitHandler(BaseHandler):
 	def post(self):
 		if not self.current_user:
 			self.set_status(401)
-			return
 		else:
-			param = self.request.body.decode('utf-8')
-			data = json.load(param)
+			data = json.loads(self.request.body.decode('utf-8'))
 			unit = Unit(self.db)
 			if unit.retrieve({'name': data['name']}) == None:
 				unitInfo = unit.create(data)
@@ -45,11 +41,10 @@ class RegisterunitHandler(BaseHandler):
 			else:
 				self.write({'status': 0})
 
-class GetalldepartmentHandler(BaseHandler):
+class GetalldepartmentsHandler(BaseHandler):
 	def get(self):
 		if not self.current_user:
 			self.set_status(401)
-			return
 		else:
 			department = Department(self.db)
 			departmentsInfo = department.retrieve()
@@ -60,7 +55,6 @@ class GetdepartmentHandler(BaseHandler):
 	def get(self):
 		if not self.current_user:
 			self.set_status(401)
-			return
 		else:
 			department = Department(self.db)
 			departmentid = self.get_argument('id', '')
@@ -70,14 +64,12 @@ class GetdepartmentHandler(BaseHandler):
 			else:
 				self.write({'status': 0})
 
-class RegisterdeparmentHandler(BaseHandler):
+class RegisterdepartmentHandler(BaseHandler):
 	def post(self):
 		if not self.current_user:
 			self.set_status(401)
-			return
 		else:
-			param = self.request.body.decode('utf-8')
-			data = json.load(param)
+			data = json.loads(self.request.body.decode('utf-8'))
 			department = Department(self.db)
 			if department.retrieve({'name': data['name']}) == None:
 				departmentInfo = department.create(data)

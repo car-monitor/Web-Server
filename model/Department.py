@@ -4,33 +4,31 @@ import config
 
 
 class Department:
-	def __init__(self, client):
-		#client = MongoClient(config.address, config.port)
-		self.db = client[config.dbname]
-		self.department_collection = self.db.department_collection
+	def __init__(self, db):
+		self.department_collection = db.department_collection
 
 	def create(self, data):
-		departmentId = self.department_collection.insert({'name': data['name']})
-		data['id'] = departmentId
+		departmentId = self.department_collection.insert(data)
+		data['id'] = str(departmentId)
+		del data['_id']
 		return data
 
 	def retrieve(self, data = {}):
+		if data.has_key('id'):
+			data['_id'] = ObjectId(data['id'])
+			del data['id']
+			
 		if data != {}:
-			department = self.department_collection.find_one({'_id': ObjectId(data['id'])})
-			department['id'] = str(department['_id'])
-			del department['_id']
-			return department
-		else:
-			departments = self.department_collection.find()
-			for department in departments:
+			department = self.department_collection.find_one(data)
+			if department != None:
 				department['id'] = str(department['_id'])
 				del department['_id']
+				return department
+		else:
+			cursor = self.department_collection.find()
+			departments = []
+			for department in cursor:
+				department['id'] = str(department['_id'])
+				del department['_id']
+				departments.append(department)
 			return departments
-
-
-if __name__ == '__main__':
-	client = MongoClient(config.address, config.port)
-	collection = Department(client)
-	result = collection.create({'name': 'zhishanyuan'})
-	print collection.retrieve({})
-	print collection.retrieve({'id': result['id']})

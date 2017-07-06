@@ -4,22 +4,24 @@ import config
 
 
 class User:
-	def __init__(self, client):
-		#client = MongoClient(config.address, config.port)
-		self.db = client[config.dbname]
-		self.user_collection = self.db.user_collection
+	def __init__(self, db):
+		self.user_collection = db.user_collection
 
 	def create(self, data):
-		return self.user_collection.insert({'username': data['username'], 'password': data['password']})
+		self.user_collection.insert({'username': data['username'], 'password': data['password']})
 
 	def retrieve(self, data):
 		if data.has_key('id'): 
 			data['_id'] = ObjectId(data['id'])
 			del data['id']
-		users = self.user_collection.find(data)
-		for user in users:
+		
+		cursor = self.user_collection.find(data)
+		users = []
+		for user in cursor:
 			user['id'] = str(user['_id'])
 			del user['_id']
+			users.append(user)
+		
 		if len(users) == 0:
 			return None
 		else if len(users) == 1:
@@ -37,11 +39,3 @@ class User:
 				user['id'] = str(user['_id'])
 				del user['_id']
 				return user
-
-
-if __name__ == '__main__':
-	client = MongoClient(config.address, config.port)
-	collection = User(client)
-	uid = collection.create({'username': 'xzz', 'password': '123'})
-	print collection.retrieve({'id': uid})
-	print collection.update({'id': uid, 'username': 'zzx'})
