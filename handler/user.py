@@ -1,6 +1,8 @@
+# coding:utf-8
 from base import BaseHandler
 import json
 import model.User as userModel
+import model.Order as orderModel
 
 class RegisterHandler(BaseHandler):
 
@@ -138,7 +140,25 @@ class ModifyauthorityHandler(BaseHandler):
 
 
 class GetusersHandler(BaseHandler):
-	pass
+
+	def get(self):
+		usermodel = userModel(self.db)
+		auth = int(self.get_argument('authority', '-1'))
+		# keyword = self.get_argument('keyword', '-1')
+
+		if auth == -1:
+			pass # model需要修改
+		users = usermodel.retrieve({'authority': auth})
+		self.write({"status": 1, "users": users})
+
 
 class GetuserHandler(BaseHandler):
-	pass
+
+
+	def get(self, input):
+		usermodel = userModel(self.db)
+		ordermodel = orderModel(self.db)
+
+		user = usermodel.retrieve({'id': input})
+		orders = ordermodel.retrieve({'driverId': user['id']}) # model需要修改
+		self.write({"status": 1, "user": user, "orders": orders})
