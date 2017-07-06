@@ -21,7 +21,7 @@ class User:
 				del user['_id']
 			return users
 		else: 
-			user = self.user_collection.find_one({'_id': ObjectId(data['id'])})
+			user = self.user_collection.find_one(data)
 			if user != None:
 				user['id'] = str(user['_id'])
 				del user['_id']
