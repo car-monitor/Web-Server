@@ -42,9 +42,9 @@ class GetcarHandler(BaseHandler):
 		car = Car(self.db)
 		carInfo = car.retrieve({'id': carid})
 		if carInfo != None:
-			#获取订单信息
-
-			self.write({'status': 1, 'car': carInfo, 'order': {}})
+			order = Order(self.db)
+			ordersInfo = order.retrieve({'carID': car['id']})
+			self.write({'status': 1, 'car': carInfo, 'order': ordersInfo)
 		else:
 			self.write({'status': 0})
 
