@@ -1,6 +1,7 @@
 需要访问数据库的handler请继承handler.BaseHandler
 权限判断通过cookie中id和传过来的是否一致，若不一致比较两者的权限
 主要模块包括：user、car、company、info、order
+cookie过期状态码将被设置为401
 
 handler.user.RegisteruserHandler
 -功能：注册用户（所有项都不能为空）
@@ -22,6 +23,7 @@ handler.user.RegisterinfoHandler
 				"appartmentID": xxx,
 				"jobNo": xxx}
 			}
+-响应：{"status": }
 
 
 handler.user.LoginHandler
