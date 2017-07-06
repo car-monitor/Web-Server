@@ -14,11 +14,12 @@ class Unit:
 		data['id'] = unitId
 		return data
 
-	def retrieve(self, data):
-		if data.has_key('id'):
+	def retrieve(self, data = {}):
+		if data != {}:
 			unit = self.unit_collection.find_one({'_id': ObjectId(data['id'])})
-			unit['id'] = str(unit['_id'])
-			del unit['_id']
+			if unit != None:
+				unit['id'] = str(unit['_id'])
+				del unit['_id']
 			return unit
 		else:
 			units = self.unit_collection.find()

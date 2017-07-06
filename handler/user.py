@@ -1,4 +1,4 @@
-from base import *
+from base import BaseHandler
 import json
 import model.User as userModel
 

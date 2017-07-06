@@ -15,9 +15,10 @@ class Car:
 		return data
 
 	def retrieve(self, data):
-		car = self.car_collection.find_one({'_id': ObjectId(data['id'])})
-		car['id'] = str(car['_id'])
-		del car['_id']
+		car = self.car_collection.find_one(data)
+		if car != None:
+			car['id'] = str(car['_id'])
+			del car['_id']
 		return car
 
 	def update(self, data):

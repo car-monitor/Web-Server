@@ -14,8 +14,8 @@ class Department:
 		data['id'] = departmentId
 		return data
 
-	def retrieve(self, data):
-		if data.has_key('id'):
+	def retrieve(self, data = {}):
+		if data != {}:
 			department = self.department_collection.find_one({'_id': ObjectId(data['id'])})
 			department['id'] = str(department['_id'])
 			del department['_id']
