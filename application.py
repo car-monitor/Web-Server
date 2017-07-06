@@ -25,12 +25,12 @@ class Application(tornado.web.Application):
 
         handlers = [
             (r"/regsiter", user.RegisterHandler),
-            (r"/login", ),
+            (r"/login", user.LoginHandler),
             (r"/logout", ),
             (r"/modifyinfo", ),
             (r"/modifyauthority", ),
             (r"/getusers", ),
-            (r"/getuser", ),
+            (r"/getuser/(\w+)", ),
         ]
 
         conn = MongoClient(config.address, config.port)

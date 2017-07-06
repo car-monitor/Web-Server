@@ -17,6 +17,19 @@ class RegisterHandler(BaseHandler):
 			self.write({"status" : 0})
 
 class LoginHandler(BaseHandler):
+	pass
 
-	def post(self):
-		
+class LogoutHandler(BaseHandler):
+	pass
+
+class ModifyinfoHandler(BaseHandler):
+	pass
+
+class ModifyauthorityHandler(BaseHandler):
+	pass
+
+class GetusersHandler(BaseHandler):
+	pass
+
+class GetuserHandler(BaseHandler):
+	pass
