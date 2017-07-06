@@ -2,11 +2,27 @@
 权限判断通过cookie中id和传过来的是否一致，若不一致比较两者的权限
 主要模块包括：user、car、company、info、order
 
-handler.user.RegisterHandler
+handler.user.RegisteruserHandler
 -功能：注册用户（所有项都不能为空）
 -方式：post
 -数据：{"username":xxx, "password":xxx}
 -响应：{"status":(0-用户名重复，1-注册成功)}
+
+handler.user.RegisterinfoHandler
+-功能：注册用户个人信息（部分项可以为空， 权限默认为0）
+-方式：post
+-数据：{"id": xxx,
+				"sex" : (0-女， 1-男),
+				"driverType": xxx，
+				"identify": xxx,
+				"phone": xxx,
+				"photoURL": xxx,
+				"address": xxx,
+				"companyID": xxx,
+				"appartmentID": xxx,
+				"jobNo": xxx}
+			}
+
 
 handler.user.LoginHandler
 -功能：登陆系统，在cookie内设置用户id

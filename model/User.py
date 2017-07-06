@@ -14,13 +14,13 @@ class User:
 
 	def retrieve(self, data):
 		#ignore the function of keyword
-		if data.has_key('authority'): 
+		if data.has_key('authority'):
 			users = self.user_collection.find({'authority': data['authority']})
 			for user in users:
 				user['id'] = str(user['_id'])
 				del user['_id']
 			return users
-		else: 
+		else:
 			user = self.user_collection.find_one({'_id': ObjectId(data['id'])})
 			if user != None:
 				user['id'] = str(user['_id'])
@@ -30,7 +30,7 @@ class User:
 	def update(self, data):
 		user = self.user_collection.find_one({'_id': ObjectId(data['id'])})
 		if user != None:
-			for key in data: 
+			for key in data:
 				if key != 'id': user[key] = data[key]
 			self.user_collection.save(user)
 			if not data.has_key('authority'):

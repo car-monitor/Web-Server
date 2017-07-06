@@ -10,14 +10,32 @@ class RegisterHandler(BaseHandler):
 		jparam = json.load(param)
 		usermodel = userModel(self.db)
 
-		if usermodel.retrieve(jparam) != None:
+		# 判断用户名是否已存在，已存在则注册失败
+		if not usermodel.retrieve(jparam):
 			usermodel.create(jparam)
 			self.write({"status" : 1})
 		else:
 			self.write({"status" : 0})
 
 class LoginHandler(BaseHandler):
-	pass
+
+	def post(self):
+		#将body读取出来并转换为dict对象
+		param = self.request.body.decode('utf-8')
+		jparam = json.load(param)
+		usermodel = userModel(self.db)
+
+		#判断用户是否存在,若不存在则报错
+		user = usermodel.retrieve(jparam)
+		if not user:
+			self.write({"status" : 0})
+			return
+		if user['password'] == jparam['password']:
+			self.set_secure_cookie('id', user['id'])
+			self.write({"status" : 1, "user" : user})
+
+
+
 
 class LogoutHandler(BaseHandler):
 	pass
