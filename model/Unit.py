@@ -4,34 +4,30 @@ import config
 
 
 class Unit:
-	def __init__(self, client):
-		#client = MongoClient(config.address, config.port)
-		self.db = client[config.dbname]
-		self.unit_collection = self.db.unit_collection
+	def __init__(self, db):
+		self.unit_collection = db.unit_collection
 
 	def create(self, data):
-		unitId = self.unit_collection.insert({'name': data['name']})
-		data['id'] = unitId
+		unitId = self.unit_collection.insert(data)
+		data['id'] = str(unitId)
+		del data['_id']
 		return data
 
 	def retrieve(self, data = {}):
+		if data.has_key('id'):
+			data['_id'] = ObjectId(data['id'])
+			del data['id']
 		if data != {}:
-			unit = self.unit_collection.find_one({'_id': ObjectId(data['id'])})
+			unit = self.unit_collection.find_one(data)
 			if unit != None:
 				unit['id'] = str(unit['_id'])
 				del unit['_id']
 			return unit
 		else:
-			units = self.unit_collection.find()
-			for unit in units:
+			data = self.unit_collection.find()
+			units = []
+			for unit in data:
 				unit['id'] = str(unit['_id'])
 				del unit['_id']
+				units.append(unit)
 			return units
-
-
-if __name__ == '__main__':
-	client = MongoClient(config.address, config.port)
-	collection = Unit(client)
-	result = collection.create({'name': '530'})
-	print collection.retrieve({})
-	print collection.retrieve({'id': result['id']})

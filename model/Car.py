@@ -4,20 +4,21 @@ import config
 
 
 class Car:
-	def __init__(self, client):
+	def __init__(self, db):
 		#client = MongoClient(config.address, config.port)
-		self.db = client[config.dbname]
-		self.car_collection = self.db.car_collection
+		self.car_collection = db.car_collection
 
 	def create(self, data):
 		carId = self.car_collection.insert(data)
-		data['id'] = carId
+		data['id'] = str(carId)
+		del data['_id']
 		return data
 
 	def retrieve(self, data):
 		if data.has_key('id'): 
 			data['_id'] = ObjectId(data['id'])
 			del data['id']
+			
 		car = self.car_collection.find_one(data)
 		if car != None:
 			car['id'] = str(car['_id'])

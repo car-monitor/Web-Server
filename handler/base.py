@@ -1,8 +1,10 @@
+# coding:utf-8
+
 import tornado.web
 
 class BaseHandler(tornado.web.RequestHandler):
 
-    @porperty
+    @property
     def db(self):
 		# 获取数据库连接
         return self.application.db

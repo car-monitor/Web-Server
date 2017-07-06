@@ -4,10 +4,8 @@ import config
 
 
 class Message:
-	def __init__(self, client):
-		#client = MongoClient(config.address, config.port)
-		self.db = client[config.dbname]
-		self.message_collection = self.db.message_collection
+	def __init__(self, db):
+		self.message_collection = db.message_collection
 
 	def create(self, data):
 		self.message_collection.insert(data)
@@ -18,12 +16,3 @@ class Message:
 		messages = messages1 + messages2
 		for m in messages: del m['_id']
 		return messages
-
-
-if __name__ == '__main__':
-	client = MongoClient(config.address, config.port)
-	collection = Message(client)
-	collection.create({'senderid': '595cf2ff99616e517ca52142'})
-	print collection.retrieve({'id': '595cf2ff99616e517ca52142'})
-
-		
