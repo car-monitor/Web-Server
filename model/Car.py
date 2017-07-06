@@ -15,6 +15,9 @@ class Car:
 		return data
 
 	def retrieve(self, data):
+		if data.has_key('id'): 
+			data['_id'] = ObjectId(data['id'])
+			del data['id']
 		car = self.car_collection.find_one(data)
 		if car != None:
 			car['id'] = str(car['_id'])

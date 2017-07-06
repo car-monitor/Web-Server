@@ -13,6 +13,9 @@ class User:
 		return self.user_collection.insert({'username': data['username'], 'password': data['password']})
 
 	def retrieve(self, data):
+		if data.has_key('id'): 
+			data['_id'] = ObjectId(data['id'])
+			del data['id']
 		users = self.user_collection.find(data)
 		for user in users:
 			user['id'] = str(user['_id'])
