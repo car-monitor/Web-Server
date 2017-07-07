@@ -11,52 +11,52 @@ class Order:
 		self.collection = self.db.order_collection
 
 	def create(self, orderInformation):
-		if self.collection != None:
-			CarID = orderInformation['carID']
-			DriverId = orderInformation['driverId']
-			StartSite = orderInformation['startSite']
-			CoordinateType = orderInformation['coordinateType']
-			LocationType = orderInformation['locationType']
-			StartLongitude = orderInformation['startLongitude']
-			StartLatitude = orderInformation['startLatitude']
-			EndLongitude = orderInformation['endLongitude']
-			EndLatitude = orderInformation['endLatitude']
-			IsFinished = orderInformation['isFinished']
-			StartTime = orderInformation['startTime']
-			EndTime = orderInformation['endTime']
-			AddressorName = orderInformation['addressorName']
-			AddressorPhone = orderInformation['addressorPhone']
-			AddressorAddress = orderInformation['addressorAddress']
-			AddresseeName = orderInformation['addresseeName']
-			AddresseePhone = orderInformation['addresseePhone']
-			AddresseeAddress = orderInformation['addresseeAddress']
-			SealExpect = orderInformation['sealExpect']
-			SealCurrent = orderInformation['sealCurrent']
-			self.collection.insert({'carID': CarID, 'driverId': DriverId,
-									'startSite': StartSite, 'coordinateType': CoordinateType,
-									'locationType': LocationType, 'startLongitude': StartLongitude,
-									'startLatitude': StartLatitude, 'endLongitude': EndLongitude,
-									'endLatitude': EndLatitude, 'isFinished': IsFinished,
-									'startTime': StartTime, 'endTime': EndTime,
-									'addressorName': AddressorName, 'addressorPhone': AddressorPhone,
-									'addressorAddress': AddressorAddress, 'addresseeName': AddresseeName,
-									'addresseePhone': AddresseePhone, 'addresseeAddress': AddresseeAddress,
-									'sealExpect': SealExpect, 'sealCurrent': SealCurrent\
-									})
-			#rs = self.collection.find_one({'carID':CarID, 'driverId':DriverId})
-			return {'status': 1}			# return {'status': 1, 'order':rs}  used to test
-		else:
-			return {'status': 0}
+		orderid = self.collection.insert(orderInformation)
+		orderInformation['id'] = str(orderid)
+		del orderInformation['_id']
+		return orderInformation
 
-	def retrieve(self, string_id):
-		rs = self.collection.find_one({'_id':ObjectId(string_id['id'])})
+	def retrieve(self, data):
+		flag_carid = False
+		flag_driverid = False
 
-		if rs != None:
-			rs['id'] = str(rs['_id'])
-			del rs['_id']
-			return {'status': 1, 'order': rs}
+		if data.has_key('id'):
+			data['_id'] = ObjectId(data['id'])
+			del data['id']
+
+			result = self.collection.find_one({'_id': data['_id']})
+			if result != None:
+				result['id'] = str(result['_id'])
+				del result['_id']
+				return result
 		else:
-			return {'status': 0}
+			orderlist = []
+			if data.has_key('carid'):
+				flag_carid = True
+				data['carID'] = data['carid']
+				del data['carid']
+
+			if data.has_key('driverid'):
+				flag_driverid = True
+				data['driverId'] = data['driverid']
+				del data['driverid']
+
+			if flag_carid == True && flag_driverid == True:
+				cursor = self.collection.find({'carID': data['carID'],
+											'driverId':data['driverId']})
+			else if flag_carid == True && flag_driverid == False:
+				cursor = self.collection.find({'carID': data['carID']})
+			else if flag_carid == False && flag_driverid == True:
+				cursor = self.collection.find({'driverId': data['driverId']})
+			else if flag_carid = False && flag_driverid == False:
+				cursor = self.collection.find()
+
+			if cursor != None:
+				for item in cursor:
+					item['id'] = str(item['_id'])
+					del item['_id']
+					orderlist.append(item)
+			return orderlist
 
 	def update(self, update_information):
 		passid = update_information['id']
@@ -68,16 +68,14 @@ class Order:
 					rs[key] = update_information[key]
 					self.db.order_collection.save(rs)
 				rs_1 = self.collection.find_one({'_id':ObjectId(passid)})
-			return {'status': 1, 'order':rs_1}
-		else:
-			return {'status': 0, 'order': rs}
+			return rs_1
 
-	def delete(self, string_id):
-		rs = self.collection.find_one({'_id':ObjectId(string_id['id'])})
+	def delete(self, data):
+		rs = self.collection.find_one({'_id':ObjectId(data['id'])})
 
 		if rs:
-			self.collection.remove({'_id':ObjectId(string_id['id'])})
-			rs_ = self.collection.find_one({'_id':ObjectId(string_id['id'])})
+			self.collection.remove({'_id':ObjectId(data['id'])})
+			rs_ = self.collection.find_one({'_id':ObjectId(data['id'])})
 			if rs_ == None:
 				return {'status': 1}
 		else:
