@@ -11,35 +11,32 @@ class WarningDict:
 		self.collection = self.db.warningDict_collection
 
 	def create(self, warningDict_information):
-		if self.collection != None:
-			Name = warningDict_information['name']
-			Detail = warningDict_information['detail']
-			self.collection.insert({'name': Name, 'detail': Detail})
-			#rs = self.collection.find_one({'name':Name})
-			return{'status': 1}  # return {'status': 1, 'warningDict':rs}  used to test
+		warningdictid = self.collection.insert(warningDict_information)
+		warningDict_information['id'] = str(warningdictid)
+		del warningDict_information['_id']
+		return warningdictid
+
+	def retrieve(self, data={}):
+		if data.has_key('id'):
+			data['_id'] = ObjectId(data['id'])
+			del data['id']
+
+		if data != {}:
+			rs = self.collection.find_one({'_id':data['id']})
+				if rs != None:
+					rs['id'] = str(rs['_id'])
+					del rs['_id']
+					return rs
+				else:
+					return
 		else:
-			return {'status': 0}
-
-	def retrieve(self):
-		rs = self.collection.find()
-
-		if rs != None:
-			for items in rs:
-				items['id'] = str(items['_id'])
-				del items['_id']
-			return {'status': 1, 'warnings':rs}
-		else:
-			return {'status': 0}
-
-	def retrieve(self, string_id):
-		rs = self.collection.find_one({'_id':ObjectId(string_id['id'])})
-
-		if rs != None:
-			rs['id'] = str(rs['_id'])
-			del rs['_id']
-			return {'status': 1, 'warnings': rs}
-		else:
-			return {'status': 0}
+			Dicts = []
+			dicts = self.collection.find()
+			for item in dicts:
+				item['id'] = str(items['_id'])
+				del item['_id']
+				Dicts.append(item)
+			return Dicts
 
 '''
 test case:

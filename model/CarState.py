@@ -11,42 +11,27 @@ class CarState:
 		self.collection = self.db.carState_collection
 
 	def create(self, carState_information):
-		if self.collection != None:
-			CarID = carState_information['carID']
-			DriverID = carState_information['driverID']
-			Speed = carState_information['speed']
-			Mileage = carState_information['mileage']
-			Oil = carState_information['oil']
-			LocationID = carState_information['locationID']
-			Temperature = carState_information['temperature']
-			Humidity = carState_information['humidity']
-			Pressure = carState_information['pressure']
-			Concentration = carState_information['concentration']
-			AlertID = carState_information['alertID']
-			PhotoURL = carState_information['photoURL']
-			WaybillID = carState_information['waybillID']
-			self.collection.insert({'carID':CarID, 'driverID':DriverID,
-									'speed':Speed, 'mileage':Mileage,
-									'oil':Oil, 'locationID':LocationID,
-									'temperature':Temperature, 'humidity':Humidity,
-									'pressure':Pressure, 'concentration':Concentration,
-									'alertID':AlertID, 'photoURL':PhotoURL,
-									'waybillID':WaybillID
-									})
-			#rs = self.collection.find_one({'carID':CarID, 'driverID':DriverID})
-			return {'status': 1}   # return {'status': 1, 'carState':rs} used to test
-		else:
-			return {'status': 0}
+		carstateid = self.collection.insert(carState_information)
+		carState_information['id'] = str(carstateid)
+		del carState_information['_id']
+		return carState_information
 
-	def retrieve(self, string_id):
-		rs = self.collection.find_one({'_id':ObjectId(string_id['id'])})
 
-		if rs != None:
-			rs['id'] = str(rs['_id'])
-			del rs['_id']
-			return {'status': 1, 'carstatus':rs}
-		else:
-			return {'status': 0}
+	def retrieve(self, data):
+		flag_carid = False
+		flag_driverid = False
+		if data.has_key('id'):    # Or if data.has_key('waybillId')
+			data['waybillID'] = ObjectId(data['id'])
+			del data['id']
+
+		result = self.collection.find({'waybillID': data['waybillID']})
+		Dict = []
+		if result != None:
+			for item in result:
+				item['id'] = str(item['_id'])
+				del item['_id']
+				Dict.append(item)
+			return Dict
 
 '''
 test case:

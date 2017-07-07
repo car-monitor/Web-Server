@@ -11,36 +11,49 @@ class CarLocation:
 		self.collection = self.db.carLocation_collection
 
 	def create(self, carLocation_information):
-		if self.collection != None:
-			CarID = carLocation_information['carID']
-			WaybillID = carLocation_information['waybillID']
-			Time = carLocation_information['time']
-			CoordinateType = carLocation_information['coordinateType']
-			LocationType = carLocation_information['locationType']
-			Longitude = carLocation_information['longitude']
-			Latitude = carLocation_information['latitude']
-			DriverId = carLocation_information['driverId']
-			PhotoURL = carLocation_information['photoURL']
-			self.collection.insert({'carID':CarID, 'waybillID':WaybillID,
-									'time':Time, 'coordinateType':CoordinateType,
-									'locationType':LocationType, 'longitude':Longitude,
-									'latitude':Latitude, 'driverId':DriverId,
-									'photoURL':PhotoURL
-									})
-			#rs = self.collection.find_one({'carID':CarID, 'driverId':DriverId})
-			return {'status': 1}    # return {'status': 1, 'carLocation':rs} used to test
-		else:
-			return {'status': 0}
+		carloactionId = self.collection.insert(carLocation_information)
+		carLocation_information['id'] = str(carloactionId)
+		del carLocation_information['_id']
+		return carLocation_information
 
-	def retrieve(self, string_id):
-		rs = self.collection.find_one({'_id':ObjectId(string_id['id'])})
+# Problem
+	def retrieve(self, data):
+		flag_waybillid = False
+		flag_carid = False
+		flag_driverid = False
+		if data.has_key('id'):    # Or if data.has_key('waybillId')
+			data['waybillID'] = ObjectId(data['id'])
+			del data['id']
 
-		if rs != None:
-			rs['id'] = str(rs['_id'])
-			del rs['_id']
-			return {'status': 1, 'route':rs}
-		else:
-			return {'status': 0}
+		if data.has_key('carid'):
+			flag_carid = True
+			data['carID'] = ObjectId(data['carid'])
+			del data['carid']
+
+		if data.has_key('driverid'):
+			flag_driverid = True
+			data['driverId'] = ObjectId(data['driverid'])
+			del data['driverid']
+
+		result = {}
+		if flag_carid == True && flag_driverid == False:
+			result = self.collection.find({'waybillID': data['waybillID'],
+								'carID': data['carID']})
+		else if flag_carid == False && flag_driverid == True:
+			result = self.collection.find({'waybillID': data['waybillID'],
+								'driverid': data['driverid']})
+		else if flag_carid == True && flag_driverid == True:
+			result = self.collection.find({'waybillID': data['waybillID'],
+								'carID': data['carID'], 'driverid': data['driverid']})
+		else if flag_carid == False && flag_driverid == False:
+			result = self.collection.find({'waybillID': data['waybillID']})
+		Dict = []
+		if result != None:
+			for item in result:
+				item['id'] = str(item['_id'])
+				del item['_id']
+				Dict.append(item)
+			return Dict
 
 '''
 test case:
