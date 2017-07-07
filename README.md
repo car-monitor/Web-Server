@@ -1,6 +1,31 @@
 # DataBase for Car-Monitor System
 
+[TOC]
+
+### Technology
+
+Python
+
+Tornado
+
+Mongodb
+
+
+
+### Run Database
+
+mongod --dbpath=xxx --port=xxx(default=27017)
+
 ### Run Server
+
 $ python application.py --port=xxxx
 
-（PS: 添加新文件时将.gitignore文件删除，否则上传失败）
+
+
+### Improvement
+
+Adding cache to increase the I/O rate
+
+Use session to record the state of users
+
+
