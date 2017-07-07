@@ -14,16 +14,24 @@ class Car:
 		del data['_id']
 		return data
 
-	def retrieve(self, data):
+	def retrieve(self, data = {}):
 		if data.has_key('id'): 
 			data['_id'] = ObjectId(data['id'])
 			del data['id']
 			
-		car = self.car_collection.find_one(data)
-		if car != None:
+		cursor = self.car_collection.find(data)
+		cars = []
+		for car in cursor:
 			car['id'] = str(car['_id'])
 			del car['_id']
-		return car
+			cars.append(car)
+		
+		if len(cars) == 0:
+			return None
+		elif len(cars) == 1:
+			return cars[0]
+		else:
+			return cars
 
 	def update(self, data):
 		car = self.car_collection.find_one({'_id': ObjectId(data['id'])})

@@ -10,7 +10,7 @@ class User:
 	def create(self, data):
 		self.user_collection.insert({'username': data['username'], 'password': data['password']})
 
-	def retrieve(self, data):
+	def retrieve(self, data = {}):
 		if data.has_key('id'): 
 			data['_id'] = ObjectId(data['id'])
 			del data['id']
@@ -24,7 +24,7 @@ class User:
 		
 		if len(users) == 0:
 			return None
-		else if len(users) == 1:
+		elif len(users) == 1:
 			return users[0]
 		else:
 			return users
